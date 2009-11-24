@@ -64,7 +64,8 @@ module Grit
         email = config['user.email']
       end
 
-      author_string = "#{name} <#{email}> #{Time.now.to_i} -0700" # !! TODO : gotta fix this
+      local_time = Time.now
+      author_string = "#{name} <#{email}> #{local_time.to_i} #{local_time.strftime('%z')}"
       contents << ['author', author_string].join(' ')
       contents << ['committer', author_string].join(' ')
       contents << ''
