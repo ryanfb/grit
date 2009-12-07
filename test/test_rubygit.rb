@@ -71,6 +71,15 @@ class TestRubyGit < Test::Unit::TestCase
     assert_match 'index 0000000..2e3b0cb', out
   end
 
+  def test_diff_limited_by_path
+    commit1 = '2d3acf90f35989df8f262dc50beadc4ee3ae1560'
+    commit2 = '420eac97a826bfac8724b6b0eef35c20922124b7'
+    path = 'lib/grit/git.rb'
+    assert_nothing_raised do
+      @out = @git.diff({}, commit1, commit2, '--', path)
+    end
+    assert_match 'index ad42ff5..61919df 100644', @out
+  end
 
   def test_cat_file_contents_commit
     out = @git.cat_file({:p => true}, @commit_sha)
