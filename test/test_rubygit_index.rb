@@ -47,7 +47,7 @@ class TestRubyGitIndex < Test::Unit::TestCase
     
     assert !b
     assert_not_equal sha, t.id
-    assert_equal 'a42abfd3c9c90e59423d7c37a93d5e313af53e17', t.id
+    assert_equal '944b00335769c03db1c25d8f6cc5058a5ad7d809', t.id
   end
 
   def test_add_path_file
