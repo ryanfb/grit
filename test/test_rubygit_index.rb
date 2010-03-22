@@ -33,6 +33,22 @@ class TestRubyGitIndex < Test::Unit::TestCase
     b = @git.commits.first.tree/'atester.rb'
     assert_equal 'f80c3b68482d5e1c8d24c9b8139340f0d0a928d0', b.id
   end
+  
+  def test_rm_files
+    sha = @git.commits.first.tree.id
+    
+    i = @git.index
+    i.read_tree(sha)
+    i.rm('README.txt')
+    i.commit('message', [@git.commits.first], @user, nil, 'master')
+    
+    t = @git.commits.first.tree
+    b = t/"README.txt"
+    
+    assert !b
+    assert_not_equal sha, t.id
+    assert_equal 'a42abfd3c9c90e59423d7c37a93d5e313af53e17', t.id
+  end
 
   def test_add_path_file
     sha = @git.commits.first.tree.id
