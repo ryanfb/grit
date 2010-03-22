@@ -27,6 +27,12 @@ module Grit
       ruby_git.object_exists?(object_id)
     end
 
+    def select_existing_objects(object_ids)
+      object_ids.select do |object_id|
+        object_exists?(object_id)
+      end
+    end
+
     class << self
       attr_accessor :git_binary, :git_timeout, :git_max_size
     end
@@ -72,7 +78,7 @@ module Grit
     #
     # Returns the String contents of the file
     def fs_read(file)
-      File.open(File.join(self.git_dir, file)).read
+      File.read(File.join(self.git_dir, file))
     end
 
     # Write a normal file to the filesystem.

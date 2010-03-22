@@ -54,7 +54,7 @@ class TestRepo < Test::Unit::TestCase
   # descriptions
 
   def test_description
-    assert_equal "Unnamed repository; edit this file to name it for gitweb.", @r.description
+    assert @r.description.include?("Unnamed repository; edit this file")
   end
 
   # refs
@@ -160,12 +160,16 @@ class TestRepo < Test::Unit::TestCase
   # init_bare
 
   def test_init_bare
+    FileUtils.stubs(:mkdir_p)
+
     Git.any_instance.expects(:init).returns(true)
     Repo.expects(:new).with("/foo/bar.git", {})
     Repo.init_bare("/foo/bar.git")
   end
 
   def test_init_bare_with_options
+    FileUtils.stubs(:mkdir_p)
+
     Git.any_instance.expects(:init).with(
       :bare => true, :template => "/baz/sweet").returns(true)
     Repo.expects(:new).with("/foo/bar.git", {})
@@ -175,6 +179,8 @@ class TestRepo < Test::Unit::TestCase
   # fork_bare
 
   def test_fork_bare
+    FileUtils.stubs(:mkdir_p)
+
     Git.any_instance.expects(:clone).with(
       {:bare => true, :shared => true},
       "#{absolute_project_path}/.git",
@@ -185,6 +191,8 @@ class TestRepo < Test::Unit::TestCase
   end
 
   def test_fork_bare_with_options
+    FileUtils.stubs(:mkdir_p)
+
     Git.any_instance.expects(:clone).with(
       {:bare => true, :shared => true, :template => '/awesome'},
       "#{absolute_project_path}/.git",
@@ -255,7 +263,7 @@ class TestRepo < Test::Unit::TestCase
 
   def test_alternates_with_two_alternates
     File.expects(:exist?).with("#{absolute_project_path}/.git/objects/info/alternates").returns(true)
-    File.any_instance.expects(:read).returns("/path/to/repo1/.git/objects\n/path/to/repo2.git/objects\n")
+    File.expects(:read).with("#{absolute_project_path}/.git/objects/info/alternates").returns("/path/to/repo1/.git/objects\n/path/to/repo2.git/objects\n")
 
     assert_equal ["/path/to/repo1/.git/objects", "/path/to/repo2.git/objects"], @r.alternates
   end
@@ -345,5 +353,13 @@ class TestRepo < Test::Unit::TestCase
     end
     delta_blobs = @r.commit_deltas_from(other_repo)
     assert_equal 3, delta_blobs.size
+  end
+
+  # object_exist
+
+  def test_select_existing_objects
+    before = ['634396b2f541a9f2d58b00be1a07f0c358b999b3', 'deadbeef']
+    after = ['634396b2f541a9f2d58b00be1a07f0c358b999b3']
+    assert_equal after, @r.git.select_existing_objects(before)
   end
 end

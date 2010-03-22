@@ -128,6 +128,20 @@ class TestRubyGit < Test::Unit::TestCase
     assert_equal out, "100644 blob 6afcf64c80da8253fa47228eb09bc0eea217e5d1\tlib/grit.rb"
   end
 
+  def test_ls_tree_recursive
+    # this is the tree associated with @commit_sha, which we use in
+    # the next test
+    tree_sha = '77fc9894c0904279fde93adc9c0ba231515ce68a'
+
+    out = @git.ls_tree({:r => true}, tree_sha)
+    assert_equal out, fixture('ls_tree_recursive')
+  end
+
+  def test_ls_tree_recursive_with_a_commit
+    out = @git.ls_tree({:r => true}, @commit_sha)
+    assert_equal out, fixture('ls_tree_recursive')
+  end
+
   def test_rev_list_pretty
     out = @git.rev_list({:pretty => 'raw'}, 'master')
     assert_equal out, fixture('rev_list_all')
@@ -194,7 +208,7 @@ class TestRubyGit < Test::Unit::TestCase
     paths = ['app/models/event.rb']
     puts out = @repo.git.ls_tree({}, 'master', ['app/models/event.rb'])
     puts out = @repo.tree('master', paths).contents
-    assert_equal out, '100644 blob 6afcf64c80da8253fa47228eb09bc0eea217e5d1	lib/grit.rb'
+    assert_equal out, '100644 blob 6afcf64c80da8253fa47228eb09bc0eea217e5d1 lib/grit.rb'
   end
 =end
 
